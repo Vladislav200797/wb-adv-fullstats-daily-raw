@@ -1,12 +1,14 @@
-name: WB Adv Fullstats Daily RAW (BACKFILL 30d)
+name: WB Adv Fullstats Daily RAW -> Supabase
 
 on:
+  schedule:
+    - cron: "0 4 * * *"  # 07:00 MSK
   workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -22,12 +24,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run sync (30d)
+      - name: Run sync
         env:
           WB_ADVERT_TOKEN: ${{ secrets.WB_ADVERT_TOKEN }}
           SUPABASE_DSN: ${{ secrets.SUPABASE_DSN }}
-
-          DAYS_BACK: "30"              # 👈 месяц
+          DAYS_BACK: "7"
           FULLSTATS_SLEEP_SEC: "22"
           HTTP_TIMEOUT: "60"
         run: |
