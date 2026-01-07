@@ -1,0 +1,34 @@
+name: WB Adv Fullstats Daily RAW (BACKFILL 30d)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run sync (30d)
+        env:
+          WB_ADVERT_TOKEN: ${{ secrets.WB_ADVERT_TOKEN }}
+          SUPABASE_DSN: ${{ secrets.SUPABASE_DSN }}
+
+          DAYS_BACK: "30"              # 👈 месяц
+          FULLSTATS_SLEEP_SEC: "22"
+          HTTP_TIMEOUT: "60"
+        run: |
+          python wb_adv_fullstats_daily_raw_sync.py
